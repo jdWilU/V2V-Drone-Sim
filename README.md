@@ -1,4 +1,4 @@
-# README: Multi-UAV Formation Flight Simulation
+# README: Multi-UAV V2V Collision Mitigation
 
 ## Overview
 
