@@ -58,6 +58,10 @@ It should be noted that the current implementation of this simulation does not c
 
 That being simulating drone forces, control inputs, and responses
 
-#### References
-Animation Code for the quadcopter is developed and provided by Jitendra Singh  where the 'HGtransform' function is used to animate the trajectory of quadcopter.
-Code has been sourced from: https://au.mathworks.com/matlabcentral/fileexchange/97192-quadcopter-model-matlab-code-for-animation (30 March 2024)
+
+#### Animation
+Animation Code for the quadcopter is developed and provided by Jitendra Singh  where the 'HGtransform' function is used to animate the trajectory of quadcopter. This code provides a visual representation of the quadcopters in flight. It does not provide any functionality, but aids in displaying roll pitch and yaw variations of the vehicle. 
+![dronePlot](https://github.com/user-attachments/assets/d591c59e-c9c4-4a2d-af7f-bebcae9bf0da)
+
+## References
+Quadcopter animation code has been sourced from: https://au.mathworks.com/matlabcentral/fileexchange/97192-quadcopter-model-matlab-code-for-animation (30 March 2024)
