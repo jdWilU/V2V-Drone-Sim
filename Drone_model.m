@@ -6,7 +6,7 @@ clear all
 clc
 
 %% Number of Drones
-numDrones = 4;
+numDrones = 2;
 
 % Time and simulation parameters
 t = 0:0.03:10;  % simulation time for 10 seconds
@@ -76,7 +76,7 @@ for i = 1:numDrones
     drone_Animation(0, 0, 0, 0, 0, 0, droneTransforms(i));  % Initialize at origin
 end
 
-%% Simulation loop
+% Simulation loop
 for k = 1:length(t)
     for i = 1:numDrones
         % Update drone positions and orientations
@@ -84,9 +84,10 @@ for k = 1:length(t)
         y = dronePos(i, k, 2);
         z = dronePos(i, k, 3);
         
-        % Update drone animation with the new position and orientation
-        drone_Animation(dronePos(i, 1:k, 1), dronePos(i, 1:k, 2), dronePos(i, 1:k, 3), ...
-                        roll(i, 1:k), pitch(i, 1:k), yaw(i, 1:k), droneTransforms(i));
+        % Update drone animation with the current position and orientation
+        drone_Animation([x], [y], [z], ...
+                        roll(i, k), pitch(i, k), yaw(i, k), droneTransforms(i));
     end
     pause(0.02);  % Simulate real-time updates
 end
+
