@@ -13,6 +13,10 @@ t = 0:0.03:10;  % simulation time for 10 seconds
 
 % Store drones' positions, yaw, roll, pitch
 dronePos = zeros(numDrones, length(t), 3);  % Store [x, y, z] for each drone
+
+startPosArray = zeros(numDrones, 3);  % Store start positions for plotting
+endPosArray = zeros(numDrones, 3);    % Store end positions for plotting
+
 yaw = zeros(numDrones, length(t));
 roll = zeros(numDrones, length(t));
 pitch = zeros(numDrones, length(t));
@@ -26,6 +30,10 @@ for i = 1:numDrones
     % Generate random start and end positions
     startPos = [-20 + 40 * rand(), -20 + 40 * rand(), 5 + 30 * rand()];  % Start position in x, y from -20 to 20
     endPos = [-20 + 40 * rand(), -20 + 40 * rand(), 5 + 30 * rand()];    % End position in x, y from -20 to 20
+
+       % Store start and end positions for later plotting
+    startPosArray(i, :) = startPos;
+    endPosArray(i, :) = endPos;
     
     % Generate a control point for a smooth trajectory
     controlPoint = [-20 + 40 * rand(), -20 + 40 * rand(), 15 * rand() + 10];  % Control point in x, y from -20 to 20
@@ -47,6 +55,58 @@ for i = 1:numDrones
     roll(i, :) = 5 * sin(2 * pi * 0.5 * t);  % Simulate some roll angle changes
     pitch(i, :) = 5 * cos(2 * pi * 0.5 * t); % Simulate some pitch angle changes
 end
+
+%% Plot path of drones (When implementing collision avoidance, also run after sim)
+figure;  % Open a new figure for the plots
+
+% First subplot: 3D view
+subplot(1, 2, 1);  % 1 row, 2 columns, 1st plot
+hold on;
+grid on;
+axis equal;
+xlim([-20, 20]);
+ylim([-20, 20]);
+zlim([0, 40]);
+xlabel('X[m]');
+ylabel('Y[m]');
+zlabel('Z[m]');
+title('3D Flight Paths');
+view(3);
+
+% Plot each drone's full path in 3D
+for i = 1:numDrones
+    plot3(dronePos(i, :, 1), dronePos(i, :, 2), dronePos(i, :, 3), 'LineWidth', 1.5);
+end
+
+% Highlight the start and end points
+plot3(startPosArray(:, 1), startPosArray(:, 2), startPosArray(:, 3), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g', 'DisplayName', 'Start Points');  % Green circles for start points
+plot3(endPosArray(:, 1), endPosArray(:, 2), endPosArray(:, 3), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'End Points');  % Red circles for end points
+
+legend('show');  % Show the legend
+
+% Second subplot: Top-down 2D view (ignoring the z-axis)
+subplot(1, 2, 2);  % 1 row, 2 columns, 2nd plot
+hold on;
+grid on;
+axis equal;
+xlim([-20, 20]);
+ylim([-20, 20]);
+xlabel('X[m]');
+ylabel('Y[m]');
+title('Top-Down 2D Flight Paths');
+
+% Plot each drone's full path in 2D (top-down view, ignoring z)
+for i = 1:numDrones
+    plot(dronePos(i, :, 1), dronePos(i, :, 2), 'LineWidth', 1.5);
+end
+
+% Highlight the start and end points in the 2D plot
+plot(startPosArray(:, 1), startPosArray(:, 2), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g', 'DisplayName', 'Start Points');  % Green circles for start points
+plot(endPosArray(:, 1), endPosArray(:, 2), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'End Points');  % Red circles for end points
+
+legend('show');  % Show the legend
+
+hold off;
 
 %% Initialize the drones in the environment
 figure;
@@ -74,7 +134,7 @@ end
 for i = 1:numDrones
     droneTransforms(i) = hgtransform;
     % Call the drone animation function to initialize each drone's plot
-    drone_Animation_Sphere(0, 0, 0, 0, 0, 0, droneTransforms(i));  % Initialize at origin
+    drone_Animation(0, 0, 0, 0, 0, 0, droneTransforms(i));  % Initialize at origin
 end
 
 % Simulation loop
@@ -86,7 +146,7 @@ for k = 1:length(t)
         z = dronePos(i, k, 3);
         
         % Update drone animation with the current position and orientation
-        drone_Animation_Sphere([x], [y], [z], ...
+        drone_Animation([x], [y], [z], ...
                         roll(i, k), pitch(i, k), yaw(i, k), droneTransforms(i));
     end
     pause(0.01);  % Simulate real-time updates
