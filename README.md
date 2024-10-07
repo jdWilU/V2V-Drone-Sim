@@ -5,7 +5,7 @@ Simple simulation software developed in MATLAB for modelling collision between k
 
 ## Functionality
 ##### Initial Conditions
-Initial conditions regarding simulation settings are outlined within the Drone_model.m file and allow the functionality to alter the following:
+Initial conditions regarding simulation settings are outlined within the main `drone_model.m` file and allow the functionality to alter the following:
 
 ```MATLAB
 numDrones = 4; % Number of drones to exist within the simulation
@@ -15,15 +15,41 @@ logFileName = 'flight_log.csv';  % CSV file location to store collision logs
 t = 0:0.03:10;  % Time and simulation parameters
 ```
 
-##### Flight Pathing
-When run, the simulation generates smooth Bézier curves as flight paths for each drone. These curves have been kept relatively simple, using only one control point. 
+##### Flight Pathing & Motion Parameters
+Start and end potions are randomly generated within the pre configured bounds of the simulation plot, along with the single control point.
+
+When run, the simulation generates smooth Bézier curves as flight paths for each drone utilising this control point. 
 
 ```MATLAB
 generateBezierPath = @(startP, controlP, endP, time) ...
     (1 - time).^2 * startP + 2 * (1 - time) .* time * controlP + time.^2 * endP;
 ```
 
+This Bézier curve  generates the drone's 3D flight path data, which is stored in the dronePos array.
 
+
+##### Collision Detection
+Collisions are detected by computing the euclidean distance between each drone, comparing differences in positional data. When this euclidean distance is less than the specified collisionRadius, a collision is recorded. Relevant information includes time, 
+
+This functionality has been implemented by the `checkAndLogCollisions` function. 
+
+```MATLAB
+%% Function to check if collision has occured between drones
+function [collisions, collisionPoints] = checkAndLogCollisions(dronePos, numDrones, collisionRadius, k, t, collisions, collisionPoints)
+    % Check pairwise distances and log collisions
+    for i = 1:numDrones
+        for j = i+1:numDrones
+            distance = sqrt(sum((dronePos(i, k, :) - dronePos(j, k, :)).^2));  % Euclidean distance
+            if distance < collisionRadius
+                % Record the collision details
+                collisions{end+1} = struct('time', t(k), 'drone1', i, 'drone2', j, 'position', dronePos(i, k, :));
+                collisionPoints = [collisionPoints; dronePos(i, k, :)];  % Save collision point
+            end
+        end
+    end
+end
+```
+Once the simulation is complete, collision details (test number, number of drones, collision radius, drones involved, time of collision) is written to the CSV file "flight_log.csv"
 
 ## Limitations
 It should be noted that the current implementation of this simulation does not capture complex forces regarding the drones dynamics. 

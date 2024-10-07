@@ -35,7 +35,7 @@ for i = 1:numDrones
     startPos = [-20 + 40 * rand(), -20 + 40 * rand(), 5 + 30 * rand()];  % Start position in x, y from -20 to 20
     endPos = [-20 + 40 * rand(), -20 + 40 * rand(), 5 + 30 * rand()];    % End position in x, y from -20 to 20
 
-       % Store start and end positions for later plotting
+    % Store start and end positions for later plotting
     startPosArray(i, :) = startPos;
     endPosArray(i, :) = endPos;
     
