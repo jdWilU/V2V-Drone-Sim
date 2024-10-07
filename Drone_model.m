@@ -6,7 +6,7 @@ clear all
 clc
 
 %% Number of Drones
-numDrones = 2;
+numDrones = 3;
 
 % Time and simulation parameters
 t = 0:0.03:10;  % simulation time for 10 seconds
@@ -24,11 +24,12 @@ generateBezierPath = @(startP, controlP, endP, time) ...
 % Motion parameters for each drone
 for i = 1:numDrones
     % Generate random start and end positions
-    startPos = [-20 + 20 * rand(), -20 + 20 * rand(), 5 + 30 * rand()];  % Random start within plot
-    endPos = [-20 + 20 * rand(), -20 + 20 * rand(), 5 + 30 * rand()];  % Random end within plot
+    startPos = [-20 + 40 * rand(), -20 + 40 * rand(), 5 + 30 * rand()];  % Start position in x, y from -20 to 20
+    endPos = [-20 + 40 * rand(), -20 + 40 * rand(), 5 + 30 * rand()];    % End position in x, y from -20 to 20
     
     % Generate a control point for a smooth trajectory
-    controlPoint = [-10 + 20 * rand(), -10 + 20 * rand(), 15 * rand() + 10];  % Random control point
+    controlPoint = [-20 + 40 * rand(), -20 + 40 * rand(), 15 * rand() + 10];  % Control point in x, y from -20 to 20
+
 
     % Generate smooth path using Bézier curve
     timeNormalized = linspace(0, 1, length(t));
@@ -73,7 +74,7 @@ end
 for i = 1:numDrones
     droneTransforms(i) = hgtransform;
     % Call the drone animation function to initialize each drone's plot
-    drone_Animation(0, 0, 0, 0, 0, 0, droneTransforms(i));  % Initialize at origin
+    drone_Animation_Sphere(0, 0, 0, 0, 0, 0, droneTransforms(i));  % Initialize at origin
 end
 
 % Simulation loop
@@ -85,9 +86,9 @@ for k = 1:length(t)
         z = dronePos(i, k, 3);
         
         % Update drone animation with the current position and orientation
-        drone_Animation([x], [y], [z], ...
+        drone_Animation_Sphere([x], [y], [z], ...
                         roll(i, k), pitch(i, k), yaw(i, k), droneTransforms(i));
     end
-    pause(0.02);  % Simulate real-time updates
+    pause(0.01);  % Simulate real-time updates
 end
 
