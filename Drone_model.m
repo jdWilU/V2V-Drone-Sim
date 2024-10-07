@@ -77,11 +77,12 @@ end
 fclose(fileID);
 
 
-%% Plot flight path information (3D and 2D)
+%% Plot the paths of all drones after the simulation in one figure with three subplots
+
 figure;  % Open a new figure for the plots
 
 % First subplot: 3D view
-subplot(1, 2, 1);  % 1 row, 2 columns, 1st plot
+subplot(1, 3, 1);  % 1 row, 3 columns, 1st plot
 hold on;
 grid on;
 axis equal;
@@ -100,18 +101,18 @@ for i = 1:numDrones
 end
 
 % Highlight the start and end points
-plot3(startPosArray(:, 1), startPosArray(:, 2), startPosArray(:, 3), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g', 'DisplayName', 'Start Points');  % Green circles for start points
-plot3(endPosArray(:, 1), endPosArray(:, 2), endPosArray(:, 3), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'End Points');  % Red circles for end points
+plot3(startPosArray(:, 1), startPosArray(:, 2), startPosArray(:, 3), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g', 'DisplayName', 'Start Points');
+plot3(endPosArray(:, 1), endPosArray(:, 2), endPosArray(:, 3), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'End Points');
 
-% Highlight the collision points (only if there are any)
+% Highlight the collision points (if any)
 if ~isempty(collisionPoints)
     plot3(collisionPoints(:, 1), collisionPoints(:, 2), collisionPoints(:, 3), 'rx', 'MarkerSize', 10, 'LineWidth', 2, 'DisplayName', 'Collisions');
 end
 
 legend('show');  % Show the legend
 
-% Second subplot: Top-down 2D view (ignoring the z-axis)
-subplot(1, 2, 2);  % 1 row, 2 columns, 2nd plot
+% Second subplot: Top-down 2D view (x-y plane)
+subplot(1, 3, 2);  % 1 row, 3 columns, 2nd plot
 hold on;
 grid on;
 axis equal;
@@ -119,25 +120,53 @@ xlim([-20, 20]);
 ylim([-20, 20]);
 xlabel('X[m]');
 ylabel('Y[m]');
-title('Top-Down 2D Flight Paths and Collisions');
+title('Top-Down 2D Flight Paths (X-Y)');
 
-% Plot each drone's full path in 2D (top-down view, ignoring z)
+% Plot each drone's full path in the x-y plane
 for i = 1:numDrones
     plot(dronePos(i, :, 1), dronePos(i, :, 2), 'LineWidth', 1.5);
 end
 
 % Highlight the start and end points in the 2D plot
-plot(startPosArray(:, 1), startPosArray(:, 2), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g', 'DisplayName', 'Start Points');  % Green circles for start points
-plot(endPosArray(:, 1), endPosArray(:, 2), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'End Points');  % Red circles for end points
+plot(startPosArray(:, 1), startPosArray(:, 2), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g', 'DisplayName', 'Start Points');
+plot(endPosArray(:, 1), endPosArray(:, 2), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'End Points');
 
-% Highlight the collision points in the 2D plot (only if there are any)
+% Highlight the collision points in the 2D plot
 if ~isempty(collisionPoints)
     plot(collisionPoints(:, 1), collisionPoints(:, 2), 'rx', 'MarkerSize', 10, 'LineWidth', 2, 'DisplayName', 'Collisions');
 end
 
 legend('show');  % Show the legend
 
-hold off
+% Third subplot: Side view 2D plot (Y-Z plane)
+subplot(1, 3, 3);  % 1 row, 3 columns, 3rd plot
+hold on;
+grid on;
+axis equal;
+
+xlabel('Y[m]');
+ylabel('Z[m]');
+
+title('Side View 2D Flight Paths (Y-Z)');
+
+% Plot each drone's full path in the y-z plane
+for i = 1:numDrones
+    plot(dronePos(i, :, 2), dronePos(i, :, 3), 'LineWidth', 1.5);
+end
+
+% Highlight the start and end points in the y-z plot
+plot(startPosArray(:, 2), startPosArray(:, 3), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g', 'DisplayName', 'Start Points');
+plot(endPosArray(:, 2), endPosArray(:, 3), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'End Points');
+
+% Highlight the collision points in the y-z plot
+if ~isempty(collisionPoints)
+    plot(collisionPoints(:, 2), collisionPoints(:, 3), 'rx', 'MarkerSize', 10, 'LineWidth', 2, 'DisplayName', 'Collisions');
+end
+
+axis([-20, 20, 0, 40]);  % Set Y-axis from -20 to 20, and Z-axis from 0 to 40
+
+legend('show');  % Show the legend
+
 
 %% Initialize the drones in the environment
 figure;
