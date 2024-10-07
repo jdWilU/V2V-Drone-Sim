@@ -3,6 +3,7 @@
 ## Overview
 Simple simulation software developed in MATLAB for measuring collision between kinematically modelled UAS platforms. The simulation is to act as a means of evaluating V2V communication and collision mitigation strategies for the completion of EGH400-1. 
 
+![readmeImage](https://github.com/user-attachments/assets/5ab73f6f-7fef-452f-a3d0-8f9d1b06a090) ![dronePlot](https://github.com/user-attachments/assets/aed78d05-0ce3-4544-a7ba-9b2c4c85793e)
 
 
 ## Functionality
