@@ -1,4 +1,4 @@
-function animation = drone_Animation(x, y, z, roll, pitch, yaw)
+function drone_Animation(x, y, z, roll, pitch, yaw, combinedobject)
     % This Animation code is for QuadCopter. Written by Jitendra Singh 
     
     %% Define design parameters (scaled by 4)
@@ -25,71 +25,48 @@ function animation = drone_Animation(x, y, z, roll, pitch, yaw)
     yp = r_p * sin(to);
     zp = zeros(1, length(to));
 
-    %% Define Figure plot
-    fig1 = figure('pos', [0 50 800 600]);
-    hg   = gca;
-    view(68, 53);
-    grid on;
-    axis equal;
-    
-    % Expanded plot limits to accommodate larger drone and sphere
-    xlim([-10, 10]);  % 4x the previous range
-    ylim([-10, 10]);  % 4x the previous range
-    zlim([0, 20]);  % 4x the previous range
-    
-    title('(JITENDRA) Scaled Drone Animation with Proximity Sphere')
-    xlabel('X[m]');
-    ylabel('Y[m]');
-    zlabel('Z[m]');
-    hold(gca, 'on');
-
     %% Design Different parts (scaled)
     % Design the base square
-    drone(1) = patch([base(1, :)], [base(2, :)], [base(3, :)], 'r');
-    drone(2) = patch([base(1, :)], [base(2, :)], [base(3, :) + H], 'r');
+    drone(1) = patch([base(1, :)], [base(2, :)], [base(3, :)], 'r', 'Parent', combinedobject);
+    drone(2) = patch([base(1, :)], [base(2, :)], [base(3, :) + H], 'r', 'Parent', combinedobject);
     alpha(drone(1:2), 0.7);
     
     % Design 2 perpendicular legs of quadcopter
     [xcylinder, ycylinder, zcylinder] = cylinder([H/2 H/2]);
-    drone(3) = surface(b*zcylinder - b/2, ycylinder, xcylinder + H/2, 'facecolor', 'b');
-    drone(4) = surface(ycylinder, b*zcylinder - b/2, xcylinder + H/2, 'facecolor', 'b');
+    drone(3) = surface(b*zcylinder - b/2, ycylinder, xcylinder + H/2, 'facecolor', 'b', 'Parent', combinedobject);
+    drone(4) = surface(ycylinder, b*zcylinder - b/2, xcylinder + H/2, 'facecolor', 'b', 'Parent', combinedobject);
     alpha(drone(3:4), 0.6);
     
     % Design 4 cylindrical motors
-    drone(5) = surface(xcylinder + b/2, ycylinder, H_m*zcylinder + H/2, 'facecolor', 'r');
-    drone(6) = surface(xcylinder - b/2, ycylinder, H_m*zcylinder + H/2, 'facecolor', 'r');
-    drone(7) = surface(xcylinder, ycylinder + b/2, H_m*zcylinder + H/2, 'facecolor', 'r');
-    drone(8) = surface(xcylinder, ycylinder - b/2, H_m*zcylinder + H/2, 'facecolor', 'r');
+    drone(5) = surface(xcylinder + b/2, ycylinder, H_m*zcylinder + H/2, 'facecolor', 'r', 'Parent', combinedobject);
+    drone(6) = surface(xcylinder - b/2, ycylinder, H_m*zcylinder + H/2, 'facecolor', 'r', 'Parent', combinedobject);
+    drone(7) = surface(xcylinder, ycylinder + b/2, H_m*zcylinder + H/2, 'facecolor', 'r', 'Parent', combinedobject);
+    drone(8) = surface(xcylinder, ycylinder - b/2, H_m*zcylinder + H/2, 'facecolor', 'r', 'Parent', combinedobject);
     alpha(drone(5:8), 0.7);
     
     % Design 4 propellers
-    drone(9)  = patch(xp + b/2, yp, zp + (H_m + H/2), 'c', 'LineWidth', 0.5);
-    drone(10) = patch(xp - b/2, yp, zp + (H_m + H/2), 'c', 'LineWidth', 0.5);
-    drone(11) = patch(xp, yp + b/2, zp + (H_m + H/2), 'p', 'LineWidth', 0.5);
-    drone(12) = patch(xp, yp - b/2, zp + (H_m + H/2), 'p', 'LineWidth', 0.5);
+    drone(9)  = patch(xp + b/2, yp, zp + (H_m + H/2), 'c', 'LineWidth', 0.5, 'Parent', combinedobject);
+    drone(10) = patch(xp - b/2, yp, zp + (H_m + H/2), 'c', 'LineWidth', 0.5, 'Parent', combinedobject);
+    drone(11) = patch(xp, yp + b/2, zp + (H_m + H/2), 'p', 'LineWidth', 0.5, 'Parent', combinedobject);
+    drone(12) = patch(xp, yp - b/2, zp + (H_m + H/2), 'p', 'LineWidth', 0.5, 'Parent', combinedobject);
     alpha(drone(9:12), 0.3);
 
     %% Create a light blue sphere around the drone
     [sx, sy, sz] = sphere(20);  % Create a unit sphere
     sphere_radius = 4;  % Radius of 4 meters
     sphereSurface = surf(sphere_radius * sx, sphere_radius * sy, sphere_radius * sz, ...
-        'FaceColor', 'cyan', 'EdgeColor', 'none', 'FaceAlpha', 0.2);  % Light blue and transparent
+        'FaceColor', 'cyan', 'EdgeColor', 'none', 'FaceAlpha', 0.2, 'Parent', combinedobject);  % Light blue and transparent
     hold on;
 
-    %% Create a group object and parent surface
-    combinedobject = hgtransform('parent', hg);
-    set(drone, 'parent', combinedobject);
-    set(sphereSurface, 'parent', combinedobject);  % Attach the sphere to follow the drone's movement
-
     %% Animation
+    % Translation and rotation are passed externally
     for i = 1:length(x)
-        ba = plot3(x(1:i), y(1:i), z(1:i), 'b:', 'LineWidth', 1.5);
-        
         translation = makehgtform('translate', [x(i), y(i), z(i)]);
-        rotation1 = makehgtform('xrotate', (pi/180) * (roll(i)));
-        rotation2 = makehgtform('yrotate', (pi/180) * (pitch(i)));
+        rotation1 = makehgtform('xrotate', (pi/180) * roll(i));
+        rotation2 = makehgtform('yrotate', (pi/180) * pitch(i));
         rotation3 = makehgtform('zrotate', (pi/180) * yaw(i));
         
+        % Apply transformations
         set(combinedobject, 'matrix', translation * rotation3 * rotation2 * rotation1);
         drawnow;
         pause(0.02);
