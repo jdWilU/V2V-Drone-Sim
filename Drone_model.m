@@ -1,4 +1,3 @@
-% JITENDRA SINGH
 % Multiple Drone Simulation with Realistic Flight Paths
 
 close all
@@ -6,7 +5,12 @@ clear all
 clc
 
 %% Number of Drones
-numDrones = 3;
+numDrones = 4;
+collisionRadius = 3;  % Collision radius of 2 meters
+collisions = {};  % To store collision data
+testNumber = 1;   % Example test number
+logFileName = 'flight_log.csv';  % CSV file to store collision logs
+
 
 % Time and simulation parameters
 t = 0:0.03:10;  % simulation time for 10 seconds
@@ -16,6 +20,7 @@ dronePos = zeros(numDrones, length(t), 3);  % Store [x, y, z] for each drone
 
 startPosArray = zeros(numDrones, 3);  % Store start positions for plotting
 endPosArray = zeros(numDrones, 3);    % Store end positions for plotting
+collisionPoints = [];  % To store collision points
 
 yaw = zeros(numDrones, length(t));
 roll = zeros(numDrones, length(t));
@@ -56,7 +61,24 @@ for i = 1:numDrones
     pitch(i, :) = 5 * cos(2 * pi * 0.5 * t); % Simulate some pitch angle changes
 end
 
-%% Plot path of drones (When implementing collision avoidance, also run after sim)
+%% Simulation loop with collision detection
+for k = 1:length(t)
+    % Check for collisions at each time step
+    [collisions, collisionPoints] = checkAndLogCollisions(dronePos, numDrones, collisionRadius, k, t, collisions, collisionPoints);
+end
+
+%% After the simulation, log collision data to a CSV file
+header = {'Test Number', 'Number of Vehicles', 'Collision Radius', 'Drone1', 'Drone2', 'Collision Time'};
+fileID = fopen(logFileName, 'w');
+fprintf(fileID, '%s,%s,%s,%s,%s,%s\n', header{:});
+for c = 1:length(collisions)
+    fprintf(fileID, '%d,%d,%f,%d,%d,%f\n', testNumber, numDrones, collisionRadius, ...
+            collisions{c}.drone1, collisions{c}.drone2, collisions{c}.time);
+end
+fclose(fileID);
+
+
+%% Plot flight path information (3D and 2D)
 figure;  % Open a new figure for the plots
 
 % First subplot: 3D view
@@ -70,7 +92,7 @@ zlim([0, 40]);
 xlabel('X[m]');
 ylabel('Y[m]');
 zlabel('Z[m]');
-title('3D Flight Paths');
+title('3D Flight Paths and Collisions');
 view(3);
 
 % Plot each drone's full path in 3D
@@ -81,6 +103,11 @@ end
 % Highlight the start and end points
 plot3(startPosArray(:, 1), startPosArray(:, 2), startPosArray(:, 3), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g', 'DisplayName', 'Start Points');  % Green circles for start points
 plot3(endPosArray(:, 1), endPosArray(:, 2), endPosArray(:, 3), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'End Points');  % Red circles for end points
+
+% Highlight the collision points (only if there are any)
+if ~isempty(collisionPoints)
+    plot3(collisionPoints(:, 1), collisionPoints(:, 2), collisionPoints(:, 3), 'rx', 'MarkerSize', 10, 'LineWidth', 2, 'DisplayName', 'Collisions');
+end
 
 legend('show');  % Show the legend
 
@@ -93,7 +120,7 @@ xlim([-20, 20]);
 ylim([-20, 20]);
 xlabel('X[m]');
 ylabel('Y[m]');
-title('Top-Down 2D Flight Paths');
+title('Top-Down 2D Flight Paths and Collisions');
 
 % Plot each drone's full path in 2D (top-down view, ignoring z)
 for i = 1:numDrones
@@ -104,9 +131,14 @@ end
 plot(startPosArray(:, 1), startPosArray(:, 2), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g', 'DisplayName', 'Start Points');  % Green circles for start points
 plot(endPosArray(:, 1), endPosArray(:, 2), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'End Points');  % Red circles for end points
 
+% Highlight the collision points in the 2D plot (only if there are any)
+if ~isempty(collisionPoints)
+    plot(collisionPoints(:, 1), collisionPoints(:, 2), 'rx', 'MarkerSize', 10, 'LineWidth', 2, 'DisplayName', 'Collisions');
+end
+
 legend('show');  % Show the legend
 
-hold off;
+hold off
 
 %% Initialize the drones in the environment
 figure;

@@ -1,3 +1,8 @@
+%% Drone Animation function. 
+% Written by Jitendra Singh
+% Sourced from https://www.mathworks.com/matlabcentral/fileexchange/97192-quadcopter-model-matlab-code-for-animation
+
+
 function drone_Animation(x, y, z, roll, pitch, yaw, combinedobject)
     % This Animation code is for QuadCopter. Written by Jitendra Singh 
     

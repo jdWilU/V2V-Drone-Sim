@@ -1,3 +1,5 @@
+%% Display animation function. Drone represented by Sphere
+
 function drone_Animation_Sphere(x, y, z, roll, pitch, yaw, combinedobject)
     % This Animation code represents the drone as a small black sphere.
     
