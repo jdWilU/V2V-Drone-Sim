@@ -11,7 +11,6 @@ collisions = {};  % To store collision data
 testNumber = 1;   % Example test number
 logFileName = 'flight_log.csv';  % CSV file to store collision logs
 
-
 % Time and simulation parameters
 t = 0:0.03:10;  % simulation time for 10 seconds
 
