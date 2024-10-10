@@ -5,7 +5,7 @@ clear all
 clc
 
 %% Number of Drones
-numDrones = 3;
+numDrones = 4;
 collisionRadius = 3;  % Collision radius of 2 meters
 collisions = {};  % To store collision data
 testNumber = 1;   % Example test number
@@ -67,14 +67,9 @@ for k = 1:length(t)
 end
 
 %% After the simulation, log collision data to a CSV file
-header = {'Test Number', 'Number of Vehicles', 'Collision Radius', 'Drone1', 'Drone2', 'Collision Time'};
-fileID = fopen(logFileName, 'w');
-fprintf(fileID, '%s,%s,%s,%s,%s,%s\n', header{:});
-for c = 1:length(collisions)
-    fprintf(fileID, '%d,%d,%f,%d,%d,%f\n', testNumber, numDrones, collisionRadius, ...
-            collisions{c}.drone1, collisions{c}.drone2, collisions{c}.time);
-end
-fclose(fileID);
+
+logData(logFileName, testNumber, numDrones, collisionRadius, collisions);
+
 
 
 %% Plot the paths of all drones after the simulation in one figure with three subplots
