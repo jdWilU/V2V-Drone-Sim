@@ -4,16 +4,22 @@ close all
 clear all
 clc
 
-%% Number of Drones
-numDrones = 4;
-collisionRadius = 3;  % Collision radius of 2 meters
+%% Preamble parameter setting
+numDrones = 4; % Number of drones in simulation
+
+% NMAC Proxy Separation Guidelines (Andrew Weinert)
+% Typical separation dictates 500ft separation horizontal, 100ft vertical
+collisionVertical = 1; % Collision height (factor of 1)
+collisionHorizontal = 5; % Collision horizontal (factor of 5)
 collisions = {};  % To store collision data
+
 testNumber = 1;   % Example test number
 logFileName = 'flight_log.csv';  % CSV file to store collision logs
 
 % Time and simulation parameters
-t = 0:0.03:10;  % simulation time for 10 seconds
+t = 0:0.03:60;  % simulation time for 60 seconds
 
+%% Positional Setting
 % Store drones' positions, yaw, roll, pitch
 dronePos = zeros(numDrones, length(t), 3);  % Store [x, y, z] for each drone
 
@@ -63,12 +69,16 @@ end
 %% Simulation loop with collision detection
 for k = 1:length(t)
     % Check for collisions at each time step
-    [collisions, collisionPoints] = checkAndLogCollisions(dronePos, numDrones, collisionRadius, k, t, collisions, collisionPoints);
+    [collisions, collisionPoints] = checkAndLogCollisions(dronePos, numDrones, collisionHorizontal, collisionVertical, k, t, collisions, collisionPoints);
 end
 
-%% After the simulation, log collision data to a CSV file
+%% After the simulation, log data to different CSV files
 
-logData(logFileName, testNumber, numDrones, collisionRadius, collisions);
+%Collect all flight data
+
+
+%Collect Collision Data
+logCollisionData(logFileName, testNumber, numDrones, collisionRadius, collisions);
 
 
 
@@ -171,47 +181,4 @@ axis([-20, 20, 0, 40]);  % Set Y-axis from -20 to 20, and Z-axis from 0 to 40
 
 legend('show');  % Show the legend
 
-%% Initialize the drones in the environment
-figure;
-hold on;
-axis equal;
-xlim([-20, 20]);
-ylim([-20, 20]);
-zlim([0, 40]);
-xlabel('X[m]');
-ylabel('Y[m]');
-zlabel('Z[m]');
-title('Multiple Drone Simulation with Realistic Flight Paths');
-view(3);
-grid on;
-
-% Create transformation objects for each drone
-droneTransforms = gobjects(numDrones, 1);
-
-% Plot trajectories for each drone (precompute future paths)
-for i = 1:numDrones
-    plot3(dronePos(i, :, 1), dronePos(i, :, 2), dronePos(i, :, 3), 'g--', 'LineWidth', 1.5);  % Dashed green line for the future trajectory
-end
-
-% Initialize the drones in the environment
-for i = 1:numDrones
-    droneTransforms(i) = hgtransform;
-    % Call the drone animation function to initialize each drone's plot
-    drone_Animation(0, 0, 0, 0, 0, 0, droneTransforms(i));  % Initialize at origin
-end
-
-% Simulation loop
-for k = 1:length(t)
-    for i = 1:numDrones
-        % Update drone positions and orientations
-        x = dronePos(i, k, 1);
-        y = dronePos(i, k, 2);
-        z = dronePos(i, k, 3);
-        
-        % Update drone animation with the current position and orientation
-        drone_Animation([x], [y], [z], ...
-                        roll(i, k), pitch(i, k), yaw(i, k), droneTransforms(i));
-    end
-    pause(0.01);  % Simulate real-time updates
-end
 
