@@ -5,7 +5,7 @@ clear all
 clc
 
 %% Number of Drones
-numDrones = 4;
+numDrones = 3;
 collisionRadius = 3;  % Collision radius of 2 meters
 collisions = {};  % To store collision data
 testNumber = 1;   % Example test number
@@ -95,14 +95,17 @@ zlabel('Z[m]');
 title('3D Flight Paths and Collisions');
 view(3);
 
-% Plot each drone's full path in 3D
+% Plot each drone's full path in 3D and capture the line color
 for i = 1:numDrones
-    plot3(dronePos(i, :, 1), dronePos(i, :, 2), dronePos(i, :, 3), 'LineWidth', 1.5);
+    h = plot3(dronePos(i, :, 1), dronePos(i, :, 2), dronePos(i, :, 3), 'LineWidth', 1.5);
+    
+    % Get the color of the current line
+    lineColor = get(h, 'Color');
+    
+    % Plot start and end points with the same color as the drone's path
+    plot3(startPosArray(i, 1), startPosArray(i, 2), startPosArray(i, 3), 'o', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'Start Points');
+    plot3(endPosArray(i, 1), endPosArray(i, 2), endPosArray(i, 3), 's', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'End Points');
 end
-
-% Highlight the start and end points
-plot3(startPosArray(:, 1), startPosArray(:, 2), startPosArray(:, 3), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g', 'DisplayName', 'Start Points');
-plot3(endPosArray(:, 1), endPosArray(:, 2), endPosArray(:, 3), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'End Points');
 
 % Highlight the collision points (if any)
 if ~isempty(collisionPoints)
@@ -122,16 +125,19 @@ xlabel('X[m]');
 ylabel('Y[m]');
 title('Top-Down 2D Flight Paths (X-Y)');
 
-% Plot each drone's full path in the x-y plane
+% Plot each drone's full path in the x-y plane and capture the line color
 for i = 1:numDrones
-    plot(dronePos(i, :, 1), dronePos(i, :, 2), 'LineWidth', 1.5);
+    h = plot(dronePos(i, :, 1), dronePos(i, :, 2), 'LineWidth', 1.5);
+    
+    % Get the color of the current line
+    lineColor = get(h, 'Color');
+    
+    % Plot start and end points with the same color as the drone's path
+    plot(startPosArray(i, 1), startPosArray(i, 2), 'o', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'Start Points');
+    plot(endPosArray(i, 1), endPosArray(i, 2), 's', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'End Points');
 end
 
-% Highlight the start and end points in the 2D plot
-plot(startPosArray(:, 1), startPosArray(:, 2), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g', 'DisplayName', 'Start Points');
-plot(endPosArray(:, 1), endPosArray(:, 2), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'End Points');
-
-% Highlight the collision points in the 2D plot
+% Highlight the collision points in the 2D plot (if any)
 if ~isempty(collisionPoints)
     plot(collisionPoints(:, 1), collisionPoints(:, 2), 'rx', 'MarkerSize', 10, 'LineWidth', 2, 'DisplayName', 'Collisions');
 end
@@ -149,16 +155,19 @@ ylabel('Z[m]');
 
 title('Side View 2D Flight Paths (Y-Z)');
 
-% Plot each drone's full path in the y-z plane
+% Plot each drone's full path in the y-z plane and capture the line color
 for i = 1:numDrones
-    plot(dronePos(i, :, 2), dronePos(i, :, 3), 'LineWidth', 1.5);
+    h = plot(dronePos(i, :, 2), dronePos(i, :, 3), 'LineWidth', 1.5);
+    
+    % Get the color of the current line
+    lineColor = get(h, 'Color');
+    
+    % Plot start and end points with the same color as the drone's path
+    plot(startPosArray(i, 2), startPosArray(i, 3), 'o', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'Start Points');
+    plot(endPosArray(i, 2), endPosArray(i, 3), 's', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'End Points');
 end
 
-% Highlight the start and end points in the y-z plot
-plot(startPosArray(:, 2), startPosArray(:, 3), 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g', 'DisplayName', 'Start Points');
-plot(endPosArray(:, 2), endPosArray(:, 3), 'ro', 'MarkerSize', 8, 'MarkerFaceColor', 'r', 'DisplayName', 'End Points');
-
-% Highlight the collision points in the y-z plot
+% Highlight the collision points in the y-z plot (if any)
 if ~isempty(collisionPoints)
     plot(collisionPoints(:, 2), collisionPoints(:, 3), 'rx', 'MarkerSize', 10, 'LineWidth', 2, 'DisplayName', 'Collisions');
 end
@@ -166,7 +175,6 @@ end
 axis([-20, 20, 0, 40]);  % Set Y-axis from -20 to 20, and Z-axis from 0 to 40
 
 legend('show');  % Show the legend
-
 
 %% Initialize the drones in the environment
 figure;
