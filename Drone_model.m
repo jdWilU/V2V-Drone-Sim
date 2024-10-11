@@ -19,6 +19,9 @@ logFileName = 'flight_log.csv';  % CSV file to store collision logs
 % Time and simulation parameters
 t = 0:0.03:60;  % simulation time for 60 seconds
 
+testStartTime = datetime("now");  % Capture the current time
+testDuration = max(t);  % The total time the simulation ran for
+
 %% Positional Setting
 % Store drones' positions, yaw, roll, pitch
 dronePos = zeros(numDrones, length(t), 3);  % Store [x, y, z] for each drone
@@ -78,7 +81,7 @@ end
 
 
 %Collect Collision Data
-logCollisionData(logFileName, testNumber, numDrones, collisionRadius, collisions);
+logCollisionData('flight_log.csv', testNumber, numDrones, collisionHorizontal, collisionVertical, collisions, testStartTime, testDuration);
 
 
 
