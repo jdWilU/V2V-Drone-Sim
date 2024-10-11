@@ -56,11 +56,17 @@ function drone_Animation(x, y, z, roll, pitch, yaw, combinedobject)
     drone(12) = patch(xp, yp - b/2, zp + (H_m + H/2), 'p', 'LineWidth', 0.5, 'Parent', combinedobject);
     alpha(drone(9:12), 0.3);
 
-    %% Create a light blue sphere around the drone
+    %% Create a light blue ellipse around the drone
     [sx, sy, sz] = sphere(20);  % Create a unit sphere
-    sphere_radius = 4;  % Radius of 4 meters
-    sphereSurface = surf(sphere_radius * sx, sphere_radius * sy, sphere_radius * sz, ...
+    
+    % Define the dimensions of the ellipse
+    horizontal_radius = 5;  % Width along X and Y (5 meters)
+    vertical_radius = 1;    % Height along Z (1 meter)
+    
+    % Scale the sphere to create an ellipse
+    ellipseSurface = surf(horizontal_radius * sx, horizontal_radius * sy, vertical_radius * sz, ...
         'FaceColor', 'cyan', 'EdgeColor', 'none', 'FaceAlpha', 0.2, 'Parent', combinedobject);  % Light blue and transparent
+    
     hold on;
 
     %% Animation
