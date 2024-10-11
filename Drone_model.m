@@ -22,6 +22,13 @@ t = 0:0.03:60;  % simulation time for 60 seconds
 testStartTime = datetime("now");  % Capture the current time
 testDuration = max(t);  % The total time the simulation ran for
 
+%Priority setting of drones
+% Create an array of priority values [1, 2, 3, ..., numDrones]
+priorityValues = 1:numDrones;
+
+% Randomly shuffle the priority values
+randomPriorities = priorityValues(randperm(numDrones));
+
 %% Positional Setting
 % Store drones' positions, yaw, roll, pitch
 dronePos = zeros(numDrones, length(t), 3);  % Store [x, y, z] for each drone
