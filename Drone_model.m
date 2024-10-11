@@ -29,6 +29,13 @@ priorityValues = 1:numDrones;
 % Randomly shuffle the priority values
 randomPriorities = priorityValues(randperm(numDrones));
 
+% Initial velocities and acceleration (randomized for each drone)
+velocity = rand(numDrones, 3) * 2 - 1;  % Initial velocity for each drone (random direction)
+acceleration = rand(numDrones, 3) * 0.1 - 0.05;  % Small acceleration for each drone
+
+% Time step for kinematic updates
+deltaT = 0.5;  % .5 second time step
+
 %% Positional Setting
 % Store drones' positions, yaw, roll, pitch
 dronePos = zeros(numDrones, length(t), 3);  % Store [x, y, z] for each drone
@@ -90,7 +97,69 @@ end
 %Collect Collision Data
 logCollisionData('flight_log.csv', testNumber, numDrones, collisionHorizontal, collisionVertical, collisions, testStartTime, testDuration);
 
+%% Initialize the drones in the environment
+figure;
+hold on;
+axis equal;
+xlim([-20, 20]);
+ylim([-20, 20]);
+zlim([0, 40]);
+xlabel('X[m]');
+ylabel('Y[m]');
+zlabel('Z[m]');
+title('Multiple Drone Simulation with Realistic Flight Paths');
+view(3);
+grid on;
 
+% Create transformation objects for each drone
+droneTransforms = gobjects(numDrones, 1);
+
+% Plot trajectories for each drone (precompute future paths)
+for i = 1:numDrones
+    plot3(dronePos(i, :, 1), dronePos(i, :, 2), dronePos(i, :, 3), 'g--', 'LineWidth', 1.5);  % Dashed green line for the future trajectory
+end
+
+% Initialize the drones in the environment
+for i = 1:numDrones
+    droneTransforms(i) = hgtransform;
+    % Call the drone animation function to initialize each drone's plot
+    drone_Animation(0, 0, 0, 0, 0, 0, droneTransforms(i));  % Initialize at origin
+end
+
+% Simulation loop
+for k = 1:length(t)-1  % Adjust loop to avoid index overflow
+    for i = 1:numDrones
+        % Get the desired position from the Bézier path at the next time step
+        desiredPos = squeeze(dronePos(i, k+1, :));  % Bézier position at the next time step
+        
+        % Calculate the direction to the next point on the Bézier path
+        currentPos = squeeze(dronePos(i, k, :));  % Current position
+        direction = desiredPos - currentPos;  % Direction to the next Bézier point
+        
+        % Normalize the direction and set a constant speed toward the target
+        if norm(direction) ~= 0  % Ensure we don't divide by zero
+            direction = direction / norm(direction);  % Normalize the direction
+        end
+        
+        speed = 2;  % You can adjust this speed factor
+        
+        % Update position by moving towards the next Bézier point
+        newPos = currentPos + direction * speed * deltaT;
+
+        % Store the updated position for the next step
+        dronePos(i, k+1, :) = newPos;
+
+        % Compute yaw angle based on the direction of movement
+        dx = newPos(1) - currentPos(1);  % Change in x
+        dy = newPos(2) - currentPos(2);  % Change in y
+        yaw(i, k) = atan2(dy, dx) * (180 / pi);  % Compute yaw in degrees
+        
+        % Update drone animation with the current position and orientation
+        drone_Animation(newPos(1), newPos(2), newPos(3), ...
+                        roll(i, k), pitch(i, k), yaw(i, k), droneTransforms(i));
+    end
+    pause(0.01);  % Simulate real-time updates
+end
 
 %% Plot the paths of all drones after the simulation in one figure with three subplots
 
@@ -190,48 +259,3 @@ end
 axis([-20, 20, 0, 40]);  % Set Y-axis from -20 to 20, and Z-axis from 0 to 40
 
 legend('show');  % Show the legend
-
-
-%% Initialize the drones in the environment
-figure;
-hold on;
-axis equal;
-xlim([-20, 20]);
-ylim([-20, 20]);
-zlim([0, 40]);
-xlabel('X[m]');
-ylabel('Y[m]');
-zlabel('Z[m]');
-title('Multiple Drone Simulation with Realistic Flight Paths');
-view(3);
-grid on;
-
-% Create transformation objects for each drone
-droneTransforms = gobjects(numDrones, 1);
-
-% Plot trajectories for each drone (precompute future paths)
-for i = 1:numDrones
-    plot3(dronePos(i, :, 1), dronePos(i, :, 2), dronePos(i, :, 3), 'g--', 'LineWidth', 1.5);  % Dashed green line for the future trajectory
-end
-
-% Initialize the drones in the environment
-for i = 1:numDrones
-    droneTransforms(i) = hgtransform;
-    % Call the drone animation function to initialize each drone's plot
-    drone_Animation(0, 0, 0, 0, 0, 0, droneTransforms(i));  % Initialize at origin
-end
-
-% Simulation loop
-for k = 1:length(t)
-    for i = 1:numDrones
-        % Update drone positions and orientations
-        x = dronePos(i, k, 1);
-        y = dronePos(i, k, 2);
-        z = dronePos(i, k, 3);
-        
-        % Update drone animation with the current position and orientation
-        drone_Animation([x], [y], [z], ...
-                        roll(i, k), pitch(i, k), yaw(i, k), droneTransforms(i));
-    end
-    pause(0.01);  % Simulate real-time updates
-end
