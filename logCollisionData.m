@@ -1,5 +1,5 @@
 function logCollisionData(filename, testNumber, numDrones, collisionHorizontal, collisionVertical, collisions, testStartTime, testDuration)
-    % logData logs the collision data to a CSV file, appending data for subsequent tests.
+    % logCollisionData logs the collision data to a CSV file, appending data for subsequent tests.
     %
     % Inputs:
     %   - filename: Name of the file to save the log (e.g., 'flight_log.csv')
@@ -25,8 +25,8 @@ function logCollisionData(filename, testNumber, numDrones, collisionHorizontal, 
         % Write the header for the CSV file
         header = {'Test Number', 'Test Start Time', 'Test Duration', 'Number of Vehicles', ...
                   'Horizontal Collision Distance', 'Vertical Collision Distance', ...
-                  'Total Collisions', 'Drone1', 'Drone2', 'Collision Time'};
-        fprintf(fileID, '%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n', header{:});
+                  'Drone1', 'Drone2', 'Collision Time'};
+        fprintf(fileID, '%s,%s,%s,%s,%s,%s,%s,%s,%s\n', header{:});
         
     else
         % If it's not the first test, append to the existing file
@@ -38,14 +38,10 @@ function logCollisionData(filename, testNumber, numDrones, collisionHorizontal, 
         end
     end
 
-    % Write test-level information (only the first row)
-    totalCollisions = length(collisions);  % Count the number of collisions
-    fprintf(fileID, '%d,%s,%f,%d,%f,%f,%d,', testNumber, testStartTime, testDuration, numDrones, ...
-            collisionHorizontal, collisionVertical, totalCollisions);
-    
-    % Write each collision to the file
+    % Write each collision to the file (test-level and drone-level collision details in each row)
     for c = 1:length(collisions)
-        fprintf(fileID, '%d,%d,%f\n', collisions{c}.drone1, collisions{c}.drone2, collisions{c}.time);
+        fprintf(fileID, '%d,%s,%f,%d,%f,%f,%d,%d,%f\n', testNumber, testStartTime, testDuration, numDrones, ...
+                collisionHorizontal, collisionVertical, collisions{c}.drone1, collisions{c}.drone2, collisions{c}.time);
     end
     
     % Close the file

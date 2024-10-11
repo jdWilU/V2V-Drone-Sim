@@ -17,7 +17,7 @@ testNumber = 1;   % Example test number
 logFileName = 'flight_log.csv';  % CSV file to store collision logs
 
 % Time and simulation parameters
-t = 0:0.03:60;  % simulation time for 60 seconds
+t = 0:0.1:60;  % simulation time for 60 seconds
 
 testStartTime = datetime("now");  % Capture the current time
 testDuration = max(t);  % The total time the simulation ran for
