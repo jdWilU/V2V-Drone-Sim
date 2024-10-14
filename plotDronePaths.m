@@ -28,7 +28,7 @@ function plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisi
 
     % Plot Bézier paths in dashed lines
     for i = 1:numDrones
-        plot(bezierPos(i, :, 1), bezierPos(i, :, 2), bezierPos(i, :, 3), 'k--', 'LineWidth', 1.5);  % Bézier path in dashed black lines
+        plot3(bezierPos(i, :, 1), bezierPos(i, :, 2), bezierPos(i, :, 3), 'k--', 'LineWidth', 1.5);  % Bézier path in dashed black lines
     end
 
 
