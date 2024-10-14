@@ -115,10 +115,20 @@ grid on;
 % Create transformation objects for each drone
 droneTransforms = gobjects(numDrones, 1);
 
-% Plot trajectories for each drone (precompute future paths)
+
 for i = 1:numDrones
-    plot3(dronePos(i, :, 1), dronePos(i, :, 2), dronePos(i, :, 3), 'g--', 'LineWidth', 1.5);  % Dashed green line for the future trajectory
+    % Plot start and end points with the same color as the drone's path
+    % Get the color of the current line for consistent plotting
+
+    % Plot trajectories for each drone (precompute future paths)
+    h = plot3(dronePos(i, :, 1), dronePos(i, :, 2), dronePos(i, :, 3), 'LineWidth', 1.5);  % Dashed line for the future trajectory
+
+    lineColor = get(h, 'Color');
+
+    plot3(startPosArray(i, 1), startPosArray(i, 2), startPosArray(i, 3), 'o', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'Start Points');
+    plot3(endPosArray(i, 1), endPosArray(i, 2), endPosArray(i, 3), 's', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'End Points');
 end
+
 
 % Initialize the drones in the environment
 for i = 1:numDrones
