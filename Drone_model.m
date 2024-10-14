@@ -121,7 +121,7 @@ for i = 1:numDrones
     % Get the color of the current line for consistent plotting
 
     % Plot trajectories for each drone (precompute future paths)
-    h = plot3(dronePos(i, :, 1), dronePos(i, :, 2), dronePos(i, :, 3), 'LineWidth', 1.5);  % Dashed line for the future trajectory
+    h = plot3(dronePos(i, :, 1), dronePos(i, :, 2), dronePos(i, :, 3), "--", 'LineWidth', 1.5);  % Dashed line for the future trajectory
 
     lineColor = get(h, 'Color');
 

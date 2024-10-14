@@ -28,7 +28,7 @@ function plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisi
 
        % Plot Bézier paths in dashed lines
     for i = 1:numDrones
-        plot(bezierPos(i, 1), bezierPos(i, 2), bezierPos(i, 3), 'k--', 'LineWidth', 1.5);  % Bézier path in dashed black lines
+        plot3(bezierPos(i, 1), bezierPos(i, 2), bezierPos(i, 3), 'k--', 'LineWidth', 1.5);  % Bézier path in dashed black lines
     end
 
     % Plot both the original Bézier paths and the kinematic paths
@@ -77,6 +77,12 @@ function plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisi
         plot(startPosArray(i, 1), startPosArray(i, 2), 'o', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'Start Points');
         plot(endPosArray(i, 1), endPosArray(i, 2), 's', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'End Points');
     end
+
+    % Highlight the collision points in the y-z plot (if any)
+    if ~isempty(collisionPoints)
+        plot(collisionPoints(:, 1), collisionPoints(:, 2), 'rx', 'MarkerSize', 10, 'LineWidth', 2, 'DisplayName', 'Collisions');
+    end
+
 
     legend('show');
 
