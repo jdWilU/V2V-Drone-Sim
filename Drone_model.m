@@ -34,7 +34,8 @@ velocity = rand(numDrones, 3) * 2 - 1;  % Initial velocity for each drone (rando
 acceleration = rand(numDrones, 3) * 0.1 - 0.05;  % Small acceleration for each drone
 
 % Time step for kinematic updates
-deltaT = 0.5;  % .1 second time step
+deltaT = 0.25;  % .1 second time step
+
 
 %% Positional Setting
 % Store drones' positions, yaw, roll, pitch
@@ -137,8 +138,45 @@ for i = 1:numDrones
     drone_Animation(0, 0, 0, 0, 0, 0, droneTransforms(i));  % Initialize at origin
 end
 
-%% Simulation loop
 for k = 1:length(t)-1  % Adjust loop to avoid index overflow
+    for i = 1:numDrones
+        for j = i+1:numDrones
+            % Check if drones i and j are within the avoidance radius
+            inAvoidance = checkAvoidanceRadius(dronePos, k, i, j, 6, 2);
+
+            if inAvoidance
+                % Determine which drone has lower priority and should alter its path
+                if randomPriorities(i) > randomPriorities(j)
+                    % Drone i has lower priority, so it should alter its path
+                    currentPos = squeeze(dronePos(i, k, :));  % Current position of drone i
+                    endPos = endPosArray(i, :);  % End position of drone i
+                    
+                    % Recalculate the new Bézier path for drone i
+                    newBezierPath = recalculatePath(currentPos, endPos, timeNormalized, k);
+
+                    % Update the drone's path from time step k+1 onwards
+                    numRemainingSteps = length(t) - k;
+                    newBezierPath = newBezierPath(1:numRemainingSteps, :);
+                    dronePos(i, k+1:end, :) = newBezierPath;
+
+                elseif randomPriorities(j) > randomPriorities(i)
+                    % Drone j has lower priority, so it should alter its path
+                    currentPos = squeeze(dronePos(j, k, :));  % Current position of drone j
+                    endPos = endPosArray(j, :);  % End position of drone j
+                    
+                    % Recalculate the new Bézier path for drone j
+                    newBezierPath = recalculatePath(currentPos, endPos, timeNormalized, k);
+
+                    % Update the drone's path from time step k+1 onwards
+                    numRemainingSteps = length(t) - k;
+                    newBezierPath = newBezierPath(1:numRemainingSteps, :);
+                    dronePos(j, k+1:end, :) = newBezierPath;
+                end
+            end
+        end
+    end
+
+    % Continue with regular position update for each drone
     for i = 1:numDrones
         % Get the desired position from the Bézier path at the next time step
         desiredPos = squeeze(dronePos(i, k+1, :));  % Bézier position at the next time step
@@ -164,13 +202,15 @@ for k = 1:length(t)-1  % Adjust loop to avoid index overflow
         dx = newPos(1) - currentPos(1);  % Change in x
         dy = newPos(2) - currentPos(2);  % Change in y
         yaw(i, k) = atan2(dy, dx) * (180 / pi);  % Compute yaw in degrees
-        
+
         % Update drone animation with the current position and orientation
         drone_Animation(newPos(1), newPos(2), newPos(3), ...
                         roll(i, k), pitch(i, k), yaw(i, k), droneTransforms(i));
     end
+
     pause(0.01);  % Simulate real-time updates
 end
+
 
 %% After the simulation, plot the paths
 plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisionPoints, numDrones);
