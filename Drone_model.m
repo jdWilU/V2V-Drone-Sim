@@ -4,7 +4,7 @@ close all
 clear all
 clc
 
-%% Preamble parameter setting
+%% Preamble parameter settings
 numDrones = 4; % Number of drones in simulation
 
 % NMAC Proxy Separation Guidelines (Andrew Weinert)
@@ -17,7 +17,7 @@ testNumber = 1;   % Example test number
 logFileName = 'flight_log.csv';  % CSV file to store collision logs
 
 % Time and simulation parameters
-t = 0:1:60;  % simulation time for 60 seconds
+t = 0:1:120;  % simulation time for 60 seconds
 
 testStartTime = datetime("now");  % Capture the current time
 testDuration = max(t);  % The total time the simulation ran for
@@ -34,11 +34,15 @@ velocity = rand(numDrones, 3) * 2 - 1;  % Initial velocity for each drone (rando
 acceleration = rand(numDrones, 3) * 0.1 - 0.05;  % Small acceleration for each drone
 
 % Time step for kinematic updates
-deltaT = 0.5;  % .5 second time step
+deltaT = 0.5;  % .1 second time step
 
 %% Positional Setting
 % Store drones' positions, yaw, roll, pitch
 dronePos = zeros(numDrones, length(t), 3);  % Store [x, y, z] for each drone
+
+%Store orignal bezier curve paths for plotting/comparison
+bezierPos = zeros(numDrones, length(t), 3);
+
 
 startPosArray = zeros(numDrones, 3);  % Store start positions for plotting
 endPosArray = zeros(numDrones, 3);    % Store end positions for plotting
@@ -69,7 +73,8 @@ for i = 1:numDrones
     % Generate smooth path using Bézier curve
     timeNormalized = linspace(0, 1, length(t));
     for j = 1:3
-        dronePos(i, :, j) = generateBezierPath(startPos(j), controlPoint(j), endPos(j), timeNormalized);
+        bezierPos(i, :, j) = generateBezierPath(startPos(j), controlPoint(j), endPos(j), timeNormalized);  % Bézier path (Original Path)
+        dronePos(i, :, j) = generateBezierPath(startPos(j), controlPoint(j), endPos(j), timeNormalized); % Drone Path (Taken Path
     end
     
     % Compute yaw angle (heading) based on consecutive x and y positions
@@ -83,19 +88,15 @@ for i = 1:numDrones
     pitch(i, :) = 5 * cos(2 * pi * 0.5 * t); % Simulate some pitch angle changes
 end
 
+
+
+
+
 %% Simulation loop with collision detection
 for k = 1:length(t)
     % Check for collisions at each time step
     [collisions, collisionPoints] = checkAndLogCollisions(dronePos, numDrones, collisionHorizontal, collisionVertical, k, t, collisions, collisionPoints);
 end
-
-%% After the simulation, log data to different CSV files
-
-%Collect all flight data
-
-
-%Collect Collision Data
-logCollisionData('flight_log.csv', testNumber, numDrones, collisionHorizontal, collisionVertical, collisions, testStartTime, testDuration);
 
 %% Initialize the drones in the environment
 figure;
@@ -181,6 +182,10 @@ view(3);
 
 % Plot each drone's full path in 3D and capture the line color
 for i = 1:numDrones
+
+    % Bézier path in dashed black line (Original Flight Path)
+    plot3(bezierPos(i, :, 1), bezierPos(i, :, 2), bezierPos(i, :, 3), 'k--', 'LineWidth', 1.5);
+
     h = plot3(dronePos(i, :, 1), dronePos(i, :, 2), dronePos(i, :, 3), 'LineWidth', 1.5);
     
     % Get the color of the current line
@@ -208,6 +213,11 @@ ylim([-20, 20]);
 xlabel('X[m]');
 ylabel('Y[m]');
 title('Top-Down 2D Flight Paths (X-Y)');
+
+% Plot Bézier paths in dashed lines
+for i = 1:numDrones
+    plot(bezierPos(i, :, 1), bezierPos(i, :, 2), 'k--', 'LineWidth', 1.5);  % Bézier path in dashed black lines
+end
 
 % Plot each drone's full path in the x-y plane and capture the line color
 for i = 1:numDrones
@@ -239,6 +249,11 @@ ylabel('Z[m]');
 
 title('Side View 2D Flight Paths (Y-Z)');
 
+% Plot Bézier paths in dashed lines
+for i = 1:numDrones
+    plot(bezierPos(i, :, 2), bezierPos(i, :, 3), 'k--', 'LineWidth', 1.5);  % Bézier path in dashed black lines
+end
+
 % Plot each drone's full path in the y-z plane and capture the line color
 for i = 1:numDrones
     h = plot(dronePos(i, :, 2), dronePos(i, :, 3), 'LineWidth', 1.5);
@@ -259,3 +274,12 @@ end
 axis([-20, 20, 0, 40]);  % Set Y-axis from -20 to 20, and Z-axis from 0 to 40
 
 legend('show');  % Show the legend
+
+
+%% After the simulation, log data to different CSV files
+
+%Collect all flight data
+
+
+%Collect Collision Data
+logCollisionData('flight_log.csv', testNumber, numDrones, collisionHorizontal, collisionVertical, collisions, testStartTime, testDuration);
