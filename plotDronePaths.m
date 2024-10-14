@@ -1,5 +1,5 @@
 % plotDronePaths.m
-function plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisionPoints, numDrones)
+function plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisionPoints, numDrones, randomPriorities)
     % Function to plot both Bézier paths and kinematic paths for multiple drones
     % Inputs:
     % - dronePos: The kinematically updated positions of the drones
@@ -44,6 +44,9 @@ function plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisi
         % Plot start and end points with the same color as the drone's path
         plot3(startPosArray(i, 1), startPosArray(i, 2), startPosArray(i, 3), 'o', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'Start Points');
         plot3(endPosArray(i, 1), endPosArray(i, 2), endPosArray(i, 3), 's', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'End Points');
+    
+        %Show priorty values
+        text(startPosArray(i, 1), startPosArray(i, 2), startPosArray(i, 3), sprintf('P%d', randomPriorities(i)), 'FontSize', 10, 'Color', lineColor);
     end
 
     % Highlight the collision points (if any)
@@ -77,6 +80,9 @@ function plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisi
         % Plot start and end points with the same color as the path
         plot(startPosArray(i, 1), startPosArray(i, 2), 'o', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'Start Points');
         plot(endPosArray(i, 1), endPosArray(i, 2), 's', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'End Points');
+    
+        % Display priority values
+        text(startPosArray(i, 1), startPosArray(i, 2), sprintf('P%d', randomPriorities(i)), 'FontSize', 10, 'Color', lineColor);
     end
 
     % Highlight the collision points in the y-z plot (if any)
@@ -111,6 +117,10 @@ function plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisi
         % Plot start and end points with the same color as the path
         plot(startPosArray(i, 2), startPosArray(i, 3), 'o', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'Start Points');
         plot(endPosArray(i, 2), endPosArray(i, 3), 's', 'MarkerSize', 8, 'MarkerFaceColor', lineColor, 'MarkerEdgeColor', lineColor, 'DisplayName', 'End Points');
+    
+    
+        % Display priority values
+        text(startPosArray(i, 2), startPosArray(i, 3), sprintf('P%d', randomPriorities(i)), 'FontSize', 10, 'Color', lineColor);
     end
 
     % Highlight the collision points in the y-z plot (if any)

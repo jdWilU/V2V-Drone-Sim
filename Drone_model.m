@@ -213,7 +213,7 @@ end
 
 
 %% After the simulation, plot the paths
-plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisionPoints, numDrones);
+plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisionPoints, numDrones, randomPriorities);
 
 
 
