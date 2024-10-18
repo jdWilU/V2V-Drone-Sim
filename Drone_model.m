@@ -17,7 +17,7 @@ testNumber = 1;   % Example test number
 logFileName = 'flight_log.csv';  % CSV file to store collision logs
 
 % Time and simulation parameters
-t = 0:1:120;  % simulation time for 60 seconds
+t = 0:1:120;  % simulation time for 120 seconds
 
 testStartTime = datetime("now");  % Capture the current time
 testDuration = max(t);  % The total time the simulation ran for
@@ -211,6 +211,7 @@ for k = 1:length(t)-1  % Adjust loop to avoid index overflow
     pause(0.01);  % Simulate real-time updates
 end
 
+legend('show');
 
 %% After the simulation, plot the paths
 plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisionPoints, numDrones, randomPriorities);
