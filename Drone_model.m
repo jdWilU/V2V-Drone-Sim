@@ -2,10 +2,10 @@
 
 clc
 
-testNumber = 1;   % Example test number
-numSimulations = 2;
+testNumber = 13;   % Example test number
+numSimulations = 50;
 
-testLogFileName = 'test_log.csv';
+testLogFileName13 = 'test_log.csv';
 logFileName = 'collision_log.csv';  % CSV file to store collision logs
 
 
@@ -23,7 +23,7 @@ for testNumber = 1:numSimulations
     collisions = {};  % To store collision data
 
     % Time and simulation parameters
-    t = 0:1:120;  % simulation time for 120 seconds
+    t = 0:1:300;  % simulation time for 120 seconds
 
     testStartTime = datetime("now");  % Capture the current time
     testDuration = max(t);  % The total time the simulation ran for
@@ -63,17 +63,17 @@ for testNumber = 1:numSimulations
 
     % Motion parameters for each drone
     for i = 1:numDrones
-        % Generate random start and end positions
-        startPos = [-20 + 40 * rand(), -20 + 40 * rand(), 5 + 30 * rand()];  % Start position in x, y from -20 to 20
-        endPos = [-20 + 40 * rand(), -20 + 40 * rand(), 5 + 30 * rand()];    % End position in x, y from -20 to 20
-
+        % Generate random start and end positions within the new bounds
+        startPos = [-50 + 100 * rand(), -50 + 100 * rand(), 5 + 45 * rand()];  % Start position in x, y from -50 to 50, z from 5 to 50
+        endPos = [-50 + 100 * rand(), -50 + 100 * rand(), 5 + 45 * rand()];    % End position in x, y from -50 to 50, z from 5 to 50
+    
         % Store start and end positions for later plotting
         startPosArray(i, :) = startPos;
         endPosArray(i, :) = endPos;
-
-        % Generate a control point for a smooth trajectory
-        controlPoint = [-20 + 40 * rand(), -20 + 40 * rand(), 15 * rand() + 10];  % Control point in x, y from -20 to 20
-
+    
+        % Generate a control point for a smooth trajectory within the new bounds
+        controlPoint = [-50 + 100 * rand(), -50 + 100 * rand(), 10 + 40 * rand()];  % Control point in x, y from -50 to 50, z from 10 to 50
+    
         % Generate smooth path using Bézier curve
         timeNormalized = linspace(0, 1, length(t));
         for j = 1:3
@@ -102,9 +102,9 @@ for testNumber = 1:numSimulations
     figure;
     hold on;
     axis equal;
-    xlim([-20, 20]);
-    ylim([-20, 20]);
-    zlim([0, 40]);
+    xlim([-50, 50]);
+    ylim([-50, 50]);
+    zlim([0, 50]);
     xlabel('X[m]');
     ylabel('Y[m]');
     zlabel('Z[m]');
@@ -216,7 +216,8 @@ for testNumber = 1:numSimulations
     logCollisionData(logFileName, testNumber, numDrones, collisionHorizontal, collisionVertical, collisions, testStartTime, testDuration);
 
     % Collect Test Data
-    logTestData(logFileName, testNumber, numDrones, testStartTime, testDuration, collisions, randomPriorities, startPosArray, endPosArray);
+    logTestData(testLogFileName, testNumber, numDrones, testStartTime, testDuration, collisions, randomPriorities, startPosArray, endPosArray);
+
 
     testNumber = testNumber + 1;  % Increment test number
 

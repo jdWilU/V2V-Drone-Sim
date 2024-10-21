@@ -17,9 +17,9 @@ function plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisi
     hold on;
     grid on;
     axis equal;
-    xlim([-20, 20]);
-    ylim([-20, 20]);
-    zlim([0, 40]);
+    xlim([-50, 50]);
+    ylim([-50, 50]);
+    zlim([0, 50]);
     xlabel('X[m]');
     ylabel('Y[m]');
     zlabel('Z[m]');
@@ -61,8 +61,8 @@ function plotDronePaths(dronePos, bezierPos, startPosArray, endPosArray, collisi
     hold on;
     grid on;
     axis equal;
-    xlim([-20, 20]);
-    ylim([-20, 20]);
+    xlim([-50, 50]);
+    ylim([-50, 50]);
     xlabel('X[m]');
     ylabel('Y[m]');
     title('Top-Down 2D Flight Paths (X-Y)');
