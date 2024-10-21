@@ -1,23 +1,16 @@
-function logTestData(logFileName, testNumber, numDrones, testStartTime, testDuration, collisions, randomPriorities, startPosArray, endPosArray)
-    % Additional parameters: startPosArray, endPosArray
-
-    % ... (existing code)
-
-    % Convert start and end positions to strings
-    startPositionsStr = mat2str(startPosArray);
-    endPositionsStr = mat2str(endPosArray);
-
-    % Update data and header
-    data = {testNumber, numDrones, datestr(testStartTime), testDuration, numCollisions, mat2str(randomPriorities), startPositionsStr, endPositionsStr};
-    % Update header accordingly
-    if ~fileExists
-        fprintf(fid, 'TestNumber,NumDrones,TestStartTime,TestDuration,NumCollisions,RandomPriorities,StartPositions,EndPositions\n');
-    end
-
-    % Update fprintf format string
-    fprintf(fid, '%d,%d,%s,%f,%d,"%s","%s","%s"\n', data{:});
-
-    % Collect important information about the test and write to a CSV file
+function logTestData(logFileName, testNumber, numDrones, testStartTime, testDuration, collisions, randomPriorities)
+    % logTestData logs important information about each test to a CSV file.
+    %
+    % Parameters:
+    %   logFileName      - The name of the CSV file to store test data.
+    %   testNumber       - The current test number.
+    %   numDrones        - The number of drones used in the simulation.
+    %   testStartTime    - The datetime when the test started.
+    %   testDuration     - The duration of the test in seconds.
+    %   collisions       - A cell array containing collision data.
+    %   randomPriorities - An array of the randomly assigned priorities for each drone.
+    %
+    % The function appends a new line to the specified CSV file with the collected data.
 
     % Calculate the number of collisions
     numCollisions = length(collisions);
